@@ -38,10 +38,10 @@ This is a web application that provides information and statistics on registered
 
 **Data Model**
 
-1. Upload initial voter data to “Current Voter Registration Data” table 
-  - Set Start Date == File Date (this is when this data was first captured)
-  - Set End Date to Null (this data is still valid)
-2. When new voter data is uploaded by NC BOE, we follow this process:
+- Upload initial voter data to “Current Voter Registration Data” table (primary data table)
+    - Set Start Date == File Date (this is when this data was first captured)
+    - Set End Date to Null (this data is still valid)
+- When new voter data is uploaded by NC BOE, we follow this process:
    - Check for changes with the “Current Voter Registration Data” table:
      - New Voter is identified by a new “NC ID” being found 
          - Record gets added to “Current Voter Registration Data” table following same logic as initial upload (start date == file data & end date is null)
@@ -50,6 +50,7 @@ This is a web application that provides information and statistics on registered
      - Changed Voter is identified by matching NC ID’s and then checking for any field changes 
          - Old record will have End Date == File Date (no longer valid)
          - New record added with start date == file date & end date == null
+  
 
 
 
