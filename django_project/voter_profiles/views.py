@@ -4,4 +4,8 @@ from django.shortcuts import render
 
 # Create your views here.
 def home(request):
-    return HttpResponse("Hello, world. You're at the NC Voter Project")
+    return render(request, 'index.html')
+
+
+def voter_search(request):
+    return HttpResponse("Placeholder")

@@ -40,13 +40,15 @@ combined_dtypes = get_dtype_dict(df_sample, dtype_dict, dtype)
 
 # Reads file into new dataframe and removes nan
 df = pd.read_csv(file_path, sep='\t', encoding='iso-8859-1', parse_dates=['registr_dt'],
-                 dtype=combined_dtypes, nrows=100)
+                 dtype=combined_dtypes)
 
 df = df.replace('nan', '')
 df = df.fillna('')
 
+file_inst = VoterFile.objects.get(pk=1)
+
 # Create dictionary of objects for all foreign keys in registered model (to optimize DB queries)
-foreign_keys_dict = {
+fk_dict = {
     'county_id': {county.pk: county for county in County.objects.all()},
     'status_code': {status.pk: status for status in StatusCode.objects.all()},
     'status_reason': {reason.pk: reason for reason in StatusReason.objects.all()},
@@ -73,12 +75,13 @@ foreign_keys_dict = {
 
 # Function used to get object based on foreign key from fk_dict or create it if it's new
 
-def get_create_inst(fk_dict, key1, key2, **kwargs):
-    county_id_inst = fk_dict[key1][key2]
-    if not county_id_inst:
-        county_id_inst = County(pk=key2, **kwargs)
+def get_inst(fk_dict, key1, key2, model_class, **kwargs):
+    try:
+        county_id_inst = fk_dict[key1][key2]
+    except:
+        county_id_inst = model_class(pk=key2, **kwargs)
         county_id_inst.save()
-        foreign_keys_dict[key1][key2] = county_id_inst
+        fk_dict[key1][key2] = county_id_inst
 
     return county_id_inst
 
@@ -100,40 +103,30 @@ instances = []
 
 # looping through each line, creating model instance, appending to list
 for index, row in df.iterrows():
-    county_id_inst = get_create_inst(foreign_keys_dict, 'county_id', row['county_id'], county_name=row['county_desc'])
-    status_code_inst = get_create_inst(foreign_keys_dict, 'status_code', row['status_cd'],
-                                       status_desc=row['voter_status_desc'])
-    status_reason_inst = get_create_inst(foreign_keys_dict, 'status_reason', row['reason_cd'],
-                                         status_reason_desc=row['voter_status_reason_desc'])
-    race_code_inst = get_create_inst(foreign_keys_dict, 'race_code', row['race_code'])
-    ethnic_code_inst = get_create_inst(foreign_keys_dict, 'ethnic_code', row['ethnic_code'])
-    party_code_inst = get_create_inst(foreign_keys_dict, 'party_code', row['party_cd'])
-    gender_code_inst = get_create_inst(foreign_keys_dict, 'gender_code', row['gender_code'])
-    precinct_inst = get_create_inst(foreign_keys_dict, 'precinct', row['precinct_abbrv'],
-                                    precinct_desc=row['precinct_desc'])
-    munic_inst = get_create_inst(foreign_keys_dict, 'munic', row['municipality_abbrv'],
-                                 municipality_desc=row['municipality_desc'])
-    ward_inst = get_create_inst(foreign_keys_dict, 'ward', row['ward_abbrv'], ward_desc=row['ward_desc'])
-    county_commiss_inst = get_create_inst(foreign_keys_dict, 'county_commiss', row['county_commiss_abbrv'],
-                                          county_commiss_desc=row['county_commiss_desc'])
-    township_inst = get_create_inst(foreign_keys_dict, 'township', row['township_abbrv'],
-                                    township_desc=row['township_desc'])
-    school_dist_inst = get_create_inst(foreign_keys_dict, 'school_dist', row['school_dist_abbrv'],
-                                       school_dist_desc=row['school_dist_desc'])
-    fire_dist_inst = get_create_inst(foreign_keys_dict, 'fire_dist', row['fire_dist_abbrv'],
-                                     fire_dist_desc=row['fire_dist_desc'])
-    water_dist_inst = get_create_inst(foreign_keys_dict, 'water_dist', row['water_dist_abbrv'],
-                                      water_dist_desc=row['water_dist_desc'])
-    sewer_dist_inst = get_create_inst(foreign_keys_dict, 'sewer_dist', row['sewer_dist_abbrv'],
-                                      sewer_dist_desc=row['sewer_dist_desc'])
-    sanit_dist_inst = get_create_inst(foreign_keys_dict, 'sanit_dist', row['sanit_dist_abbrv'],
-                                      sanit_dist_desc=row['sanit_dist_desc'])
-    rescue_dist_inst = get_create_inst(foreign_keys_dict, 'rescue_dist', row['rescue_dist_abbrv'],
-                                       rescue_dist_desc=row['rescue_dist_desc'])
-    munic_dist_inst = get_create_inst(foreign_keys_dict, 'munic_dist', row['munic_dist_abbrv'],
-                                      munic_dist_desc=row['munic_dist_desc'])
-    dist_1_inst = get_create_inst(foreign_keys_dict, 'dist_1', row['dist_1_abbrv'], dist_1_desc=row['dist_1_desc'])
-    vtd_inst = get_create_inst(foreign_keys_dict, 'vtd', row['vtd_abbrv'], vtd_desc=row['vtd_desc'])
+    county_id_inst = get_inst(fk_dict, 'county_id', row['county_id'], County, county_name=row['county_desc'])
+    status_code_inst = get_inst(fk_dict, 'status_code', row['status_cd'], StatusCode, status_desc=row['voter_status_desc'])
+    status_reason_inst = get_inst(fk_dict, 'status_reason', row['reason_cd'], StatusReason, status_reason_desc=row['voter_status_reason_desc'])
+    race_code_inst = get_inst(fk_dict, 'race_code', row['race_code'], RaceCode)
+    ethnic_code_inst = get_inst(fk_dict, 'ethnic_code', row['ethnic_code'], EthnicityCode)
+    party_code_inst = get_inst(fk_dict, 'party_code', row['party_cd'], PartyCode)
+    gender_code_inst = get_inst(fk_dict, 'gender_code', row['gender_code'], GenderCode)
+    precinct_inst = get_inst(fk_dict, 'precinct', row['precinct_abbrv'], Precinct, precinct_desc=row['precinct_desc'])
+    munic_inst = get_inst(fk_dict, 'munic', row['municipality_abbrv'], Municipality, municipality_desc=row['municipality_desc'])
+    ward_inst = get_inst(fk_dict, 'ward', row['ward_abbrv'], Ward, ward_desc=row['ward_desc'])
+    county_commiss_inst = get_inst(fk_dict, 'county_commiss', row['county_commiss_abbrv'], CountyCommissioner, county_commiss_desc=row['county_commiss_desc'])
+    township_inst = get_inst(fk_dict, 'township', row['township_abbrv'], Township, township_desc=row['township_desc'])
+    school_dist_inst = get_inst(fk_dict, 'school_dist', row['school_dist_abbrv'], SchoolDistrict, school_dist_desc=row['school_dist_desc'])
+    fire_dist_inst = get_inst(fk_dict, 'fire_dist', row['fire_dist_abbrv'], FireDistrict, fire_dist_desc=row['fire_dist_desc'])
+    water_dist_inst = get_inst(fk_dict, 'water_dist', row['water_dist_abbrv'], WaterDistrict, water_dist_desc=row['water_dist_desc'])
+    sewer_dist_inst = get_inst(fk_dict, 'sewer_dist', row['sewer_dist_abbrv'], SewerDistrict,sewer_dist_desc=row['sewer_dist_desc'])
+    sanit_dist_inst = get_inst(fk_dict, 'sanit_dist', row['sanit_dist_abbrv'], SanitationDistrict,
+                               sanit_dist_desc=row['sanit_dist_desc'])
+    rescue_dist_inst = get_inst(fk_dict, 'rescue_dist', row['rescue_dist_abbrv'], RescueDistrict,
+                                rescue_dist_desc=row['rescue_dist_desc'])
+    munic_dist_inst = get_inst(fk_dict, 'munic_dist', row['munic_dist_abbrv'],MunicipalDistrict,
+                               munic_dist_desc=row['munic_dist_desc'])
+    dist_1_inst = get_inst(fk_dict, 'dist_1', row['dist_1_abbrv'], ProsecutorialDistrict, dist_1_desc=row['dist_1_desc'])
+    vtd_inst = get_inst(fk_dict, 'vtd', row['vtd_abbrv'], VoterTabulationDistrict, vtd_desc=row['vtd_desc'])
 
     # county_id_inst = get_create_inst(County, row['county_id'], county_name=row['county_desc'])
     # status_code_inst = get_create_inst(StatusCode, row['status_cd'], status_desc=row['voter_status_desc'])
@@ -214,8 +207,8 @@ for index, row in df.iterrows():
         municipal_dist_abbreviation=munic_dist_inst,
         prosecutorial_dist_abbreviation=dist_1_inst,
         voter_tab_dist_abbreviation=vtd_inst,
+        file_id=file_inst
         # using the below as a placeholder for now...will need to capture it from the voter_file_check script
-        file_id=VoterFile.objects.get(pk=1)
     )
     instances.append(model_instance)
 
