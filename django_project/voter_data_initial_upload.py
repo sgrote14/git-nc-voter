@@ -32,8 +32,9 @@ df_sample = pd.read_csv(file_path, sep='\t', encoding='iso-8859-1', nrows=1)
 dtype_dict = {'county_id': int, 'birth_year': int}
 dtype = 'str'
 combined_dtypes = get_dtype_dict(df_sample, dtype_dict, dtype)
-chunk_size = 300000
-file_inst = VoterFile.objects.get(pk=1)
+chunk_size = 100000
+file_inst = RegVoterFile.objects.get(pk=1)
+start_date = RegVoterFile.objects.get(pk=1).file_date
 fk_dict = {
     'county_id': {county.pk: county for county in County.objects.all()},
     'status_code': {status.pk: status for status in StatusCode.objects.all()},
@@ -62,7 +63,7 @@ params = {
     'encoding': 'iso-8859-1',
     'dtype': dtype_dict,
     'parse_dates': ['registr_dt']
-}   # Used in final function to help read file into DF correctly
+}  # Used in final function to help read file into DF correctly
 
 
 def get_inst(fk_dictionary, key1, key2, model_class, **kwargs):
@@ -82,7 +83,6 @@ def create_voter_instance(file, chunks, **kwargs):
         counter = counter + 1
         total_chunks = counter * chunks
         print(total_chunks)
-        time.sleep(3)
 
         chunk.replace('nan', '')
         chunk.fillna('', inplace=True)
@@ -125,39 +125,11 @@ def create_voter_instance(file, chunks, **kwargs):
             dist_1_inst = get_inst(fk_dict, 'dist_1', row['dist_1_abbrv'], ProsecutorialDistrict,
                                    dist_1_desc=row['dist_1_desc'])
             vtd_inst = get_inst(fk_dict, 'vtd', row['vtd_abbrv'], VoterTabulationDistrict, vtd_desc=row['vtd_desc'])
-
-            # county_id_inst = get_create_inst(County, row['county_id'], county_name=row['county_desc'])
-            # status_code_inst = get_create_inst(StatusCode, row['status_cd'], status_desc=row['voter_status_desc'])
-            # status_reason_inst = get_create_inst(StatusReason, row['reason_cd'],
-            #                                      status_reason_desc=row['voter_status_reason_desc'])
-            # race_code_inst = get_create_inst(RaceCode, row['race_code'])
-            # ethnic_code_inst = get_create_inst(EthnicityCode, row['ethnic_code'])
-            # party_code_inst = get_create_inst(PartyCode, row['party_cd'])
-            # gender_code_inst = get_create_inst(GenderCode, row['gender_code'])
-            # precinct_inst = get_create_inst(Precinct, row['precinct_abbrv'], precinct_desc=row['precinct_desc'])
-            # munic_inst = get_create_inst(Municipality, row['municipality_abbrv'], municipality_desc=row['municipality_desc'])
-            # ward_inst = get_create_inst(Ward, row['ward_abbrv'], ward_desc=row['ward_desc'])
-            # county_commiss_inst = get_create_inst(CountyCommissioner, row['county_commiss_abbrv'],
-            #                                       county_commiss_desc=row['county_commiss_desc'])
-            # township_inst = get_create_inst(Township, row['township_abbrv'], township_desc=row['township_desc'])
-            # school_dist_inst = get_create_inst(SchoolDistrict, row['school_dist_abbrv'],
-            #                                    school_dist_desc=row['school_dist_desc'])
-            # fire_dist_inst = get_create_inst(FireDistrict, row['fire_dist_abbrv'], fire_dist_desc=row['fire_dist_desc'])
-            # water_dist_inst = get_create_inst(WaterDistrict, row['water_dist_abbrv'], water_dist_desc=row['water_dist_desc'])
-            # sewer_dist_inst = get_create_inst(SewerDistrict, row['sewer_dist_abbrv'], sewer_dist_desc=row['sewer_dist_desc'])
-            # sanit_dist_inst = get_create_inst(SanitationDistrict, row['sanit_dist_abbrv'],
-            #                                   sanit_dist_desc=row['sanit_dist_desc'])
-            # rescue_dist_inst = get_create_inst(RescueDistrict, row['rescue_dist_abbrv'],
-            #                                    rescue_dist_desc=row['rescue_dist_desc'])
-            # munic_dist_inst = get_create_inst(MunicipalDistrict, row['munic_dist_abbrv'],
-            #                                   munic_dist_desc=row['munic_dist_desc'])
-            # dist_1_inst = get_create_inst(ProsecutorialDistrict, row['dist_1_abbrv'], dist_1_desc=row['dist_1_desc'])
-            # vtd_inst = get_create_inst(VoterTabulationDistrict, row['vtd_abbrv'], vtd_desc=row['vtd_desc'])
-
-            model_instance = RegisteredVoters(
+            model_instance = RegisteredVotersActive(
                 # all non-foreign keys
                 nc_id=row['ncid'],
                 voter_registration_number=row['voter_reg_num'],
+                start_date=start_date,
                 first_name=row['first_name'],
                 middle_name=row['middle_name'],
                 last_name=row['last_name'],
@@ -209,7 +181,7 @@ def create_voter_instance(file, chunks, **kwargs):
                 # using the below as a placeholder for now...will need to capture it from the voter_file_check script
             )
             instances.append(model_instance)
-        RegisteredVoters.objects.bulk_create(instances)
+        RegisteredVotersActive.objects.bulk_create(instances)
 
 
 create_voter_instance(file_path, chunk_size, **params)

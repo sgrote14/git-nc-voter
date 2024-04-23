@@ -2,10 +2,19 @@ from django.db import models
 
 
 # Create your models here.
-class VoterFile(models.Model):
+class RegVoterFile(models.Model):
     file_date = models.DateTimeField(auto_now_add=False)
 
     # s3_bucket = models.CharField(max_length=100)
+    def __str__(self):
+        return f"{self.id}: {str(self.file_date)}"
+
+
+class VoterHistoryFile(models.Model):
+    file_date = models.DateTimeField(auto_now_add=False)
+
+    # s3 bucket = models.CharField(max_length=100)
+
     def __str__(self):
         return f"{self.id}: {str(self.file_date)}"
 
@@ -16,18 +25,6 @@ class County(models.Model):
 
     def __str__(self):
         return f"{self.county_id}: {self.county_name}"
-
-
-class VoterHistory(models.Model):
-    nc_id = models.CharField(max_length=20, primary_key=True)
-    county_id = models.IntegerField()
-    election_date = models.DateField()
-    election_description = models.CharField(max_length=100)
-    voting_method = models.CharField(max_length=50)
-    voted_party = models.CharField(max_length=5)
-    precinct_abbreviation = models.CharField(max_length=6)
-    voted_county_id = models.CharField(max_length=6)
-    voted_district_label = models.CharField(max_length=6)
 
 
 class StatusCode(models.Model):
@@ -60,6 +57,7 @@ class EthnicityCode(models.Model):
 
     def __str__(self):
         return f"{self.ethnicity_code}: {self.ethnicity_desc}"
+
 
 class PartyCode(models.Model):
     party_code = models.CharField(max_length=5, primary_key=True)
@@ -147,10 +145,12 @@ class VoterTabulationDistrict(models.Model):
     vtd_desc = models.CharField(max_length=100)
 
 
-class RegisteredVoters(models.Model):
-    nc_id = models.CharField(max_length=20)
+class RegisteredVotersActive(models.Model):
+    nc_id = models.CharField(max_length=100, primary_key=True)
     voter_registration_number = models.CharField(max_length=100)
-    file_id = models.ForeignKey(VoterFile, on_delete=models.PROTECT)
+    start_date = models.DateField()
+    end_date = models.DateField(default=None, null=True)
+    file_id = models.ForeignKey(RegVoterFile, on_delete=models.PROTECT)
     county_id = models.ForeignKey(County, on_delete=models.PROTECT)
     first_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100)
@@ -170,7 +170,7 @@ class RegisteredVoters(models.Model):
     mail_state = models.CharField(max_length=2)
     mail_zip_code = models.CharField(max_length=9)
     phone_number = models.CharField(max_length=12)
-    registration_date = models.DateTimeField(auto_now_add=False)
+    registration_date = models.DateField(auto_now_add=False)
     race_code = models.ForeignKey(RaceCode, on_delete=models.PROTECT)
     ethnicity_code = models.ForeignKey(EthnicityCode, on_delete=models.PROTECT)
     party_code = models.ForeignKey(PartyCode, on_delete=models.PROTECT)
@@ -197,3 +197,73 @@ class RegisteredVoters(models.Model):
     municipal_dist_abbreviation = models.ForeignKey(MunicipalDistrict, on_delete=models.PROTECT)
     prosecutorial_dist_abbreviation = models.ForeignKey(ProsecutorialDistrict, on_delete=models.PROTECT)
     voter_tab_dist_abbreviation = models.ForeignKey(VoterTabulationDistrict, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.first_name} + ' ' + {self.last_name}"
+
+
+class RegisteredVotersHistorical(models.Model):
+    nc_id = models.ForeignKey(RegisteredVotersActive, on_delete=models.PROTECT)
+    voter_registration_number = models.CharField(max_length=100)
+    start_date = models.DateField()
+    end_date = models.DateField(default=None, null=True)
+    file_id = models.ForeignKey(RegVoterFile, on_delete=models.PROTECT)
+    county_id = models.ForeignKey(County, on_delete=models.PROTECT)
+    first_name = models.CharField(max_length=100)
+    middle_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    name_suffix = models.CharField(max_length=5)
+    status_code = models.ForeignKey(StatusCode, on_delete=models.PROTECT)
+    status_reason_code = models.ForeignKey(StatusReason, on_delete=models.PROTECT)
+    street_address = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    zip_code = models.CharField(max_length=9)
+    state = models.CharField(max_length=2)
+    mail_address_1 = models.CharField(max_length=100)
+    mail_address_2 = models.CharField(max_length=100)
+    mail_address_3 = models.CharField(max_length=100)
+    mail_address_4 = models.CharField(max_length=100)
+    mail_city = models.CharField(max_length=100)
+    mail_state = models.CharField(max_length=2)
+    mail_zip_code = models.CharField(max_length=9)
+    phone_number = models.CharField(max_length=12)
+    registration_date = models.DateField(auto_now_add=False)
+    race_code = models.ForeignKey(RaceCode, on_delete=models.PROTECT)
+    ethnicity_code = models.ForeignKey(EthnicityCode, on_delete=models.PROTECT)
+    party_code = models.ForeignKey(PartyCode, on_delete=models.PROTECT)
+    gender_code = models.ForeignKey(GenderCode, on_delete=models.PROTECT)
+    birth_year = models.IntegerField()
+    birth_state = models.CharField(max_length=2)
+    drivers_license = models.CharField(max_length=2)
+    precinct_abbreviation = models.ForeignKey(Precinct, on_delete=models.PROTECT)
+    municipality_abbreviation = models.ForeignKey(Municipality, on_delete=models.PROTECT)
+    ward_abbreviation = models.ForeignKey(Ward, on_delete=models.PROTECT)
+    congress_dist_abbreviation = models.CharField(max_length=6)
+    superior_court_abbreviation = models.CharField(max_length=6)
+    judicial_dist_abbreviation = models.CharField(max_length=6)
+    nc_senate_abbreviation = models.CharField(max_length=6)
+    nc_house_abbreviation = models.CharField(max_length=6)
+    county_comm_abbreviation = models.ForeignKey(CountyCommissioner, on_delete=models.PROTECT)
+    township_abbreviation = models.ForeignKey(Township, on_delete=models.PROTECT)
+    school_dist_abbreviation = models.ForeignKey(SchoolDistrict, on_delete=models.PROTECT)
+    fire_dist_abbreviation = models.ForeignKey(FireDistrict, on_delete=models.PROTECT)
+    water_dist_abbreviation = models.ForeignKey(WaterDistrict, on_delete=models.PROTECT)
+    sewer_dist_abbreviation = models.ForeignKey(SewerDistrict, on_delete=models.PROTECT)
+    sanitation_dist_abbreviation = models.ForeignKey(SanitationDistrict, on_delete=models.PROTECT)
+    rescue_dist_abbreviation = models.ForeignKey(RescueDistrict, on_delete=models.PROTECT)
+    municipal_dist_abbreviation = models.ForeignKey(MunicipalDistrict, on_delete=models.PROTECT)
+    prosecutorial_dist_abbreviation = models.ForeignKey(ProsecutorialDistrict, on_delete=models.PROTECT)
+    voter_tab_dist_abbreviation = models.ForeignKey(VoterTabulationDistrict, on_delete=models.PROTECT)
+
+
+class VoterHistory(models.Model):
+    reg_voter = models.ForeignKey(RegisteredVotersActive, on_delete=models.PROTECT)
+    voter_registration_num = models.CharField(max_length=100)
+    county_id = models.ForeignKey(County, on_delete=models.PROTECT)
+    election_date = models.DateField()
+    election_description = models.CharField(max_length=100)
+    voting_method = models.CharField(max_length=50)
+    voted_party = models.CharField(max_length=5)
+    precinct_abbreviation = models.CharField(max_length=6)
+    voted_county_id = models.CharField(max_length=6)
+    voted_district_label = models.CharField(max_length=6)
