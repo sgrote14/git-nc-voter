@@ -7,6 +7,8 @@ import django
 import os
 import pandas as pd
 
+# Need help speeding this up!!!
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", 'django_project.settings')
 django.setup()
 from voter_profiles.models import RegisteredVotersActive, County, VoterHistory
@@ -36,7 +38,7 @@ chunk_size = 100000
 fk_dict = {
     'nc_id': {},
     'county_id': {county.pk: county for county in County.objects.all()}
-}
+} # I didn't do this for nc_id because that would require querying 8.5 million records
 params = {
     'sep': '\t',
     'encoding': 'iso-8859-1',
