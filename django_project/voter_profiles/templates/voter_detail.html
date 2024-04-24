@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div>
+    <button onclick="goBack()">Go Back</button>
+<script>
+function goBack() {
+  window.history.back();
+}
+</script>
+</div>
+<br>
+    <table id="voter-detail" class="table table_striped table-bordered table-hover table-sm">
+        <thead class="thead-light">
+            <th>NC ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Street Address</th>
+            <th>City</th>
+            <th>Phone Number</th>
+            <th>Registration Date</th>
+            <th>Party</th>
+            <th>Birth Year</th>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ voter_info.nc_id}}</td>
+            <td>{{ voter_info.first_name }}</td>
+            <td>{{ voter_info.last_name }}</td>
+            <td>{{ voter_info.street_address }}</td>
+            <td>{{ voter_info.city }}</td>
+            <td>{{ voter_info.phone_number }}</td>
+            <td>{{ voter_info.registration_date }}</td>
+            <td>{{ voter_info.party_code_id }}</td>
+            <td>{{ voter_info.birth_year }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <script>
+        $(document).ready(function () {
+            $('#voter-info').DataTable({
+                "paging": false}
+            );
+        });
+    </script>
+{% endblock %}
+

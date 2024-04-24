@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="get" action="">
+        {{ search_form }}
+        <button type="submit">Search</button>
+    </form>
+    <p><b>Total Results: {{ num_results }}</b></p>
+    <table id="search-results" class="table table_striped table-bordered table-hover table-sm">
+        <thead class="thead-light">
+            <th>NC ID</th>
+            <th>First Name</th>
+            <th>Middle Name</th>
+            <th>Last Name</th>
+            <th>Street Address</th>
+            <th>City</th>
+            <th>Phone Number</th>
+            <th>Registration Date</th>
+            <th>Party</th>
+            <th>Birth Year</th>
+        </thead>
+        <tbody>
+        {% for item in queryset %}
+        <tr>
+            <td><a href="{% url 'voter_detail' item.nc_id %}">{{item.nc_id}}</a></td>
+            <td>{{ item.first_name }}</td>
+            <td>{{ item.middle_name}}</td>
+            <td>{{ item.last_name }}</td>
+            <td>{{ item.street_address }}</td>
+            <td>{{ item.city }}</td>
+            <td>{{ item.phone_number }}</td>
+            <td>{{ item.registration_date }}</td>
+            <td>{{ item.party_code_id }}</td>
+            <td>{{ item.birth_year }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        $(document).ready(function () {
+            $('#search-results').DataTable({
+                "pageLength": 25}
+            );
+        });
+    </script>
+{% endblock %}
+
