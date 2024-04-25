@@ -3,7 +3,7 @@
     <h1>Welcome to the NC Democratic Voter Project</h1>
     <p>Website developed by Sam Grote based on voter data as of: {{file_date.file_date}}</p>
     <div id= "index-table" style="width: 50%; float: left; text-align: left">
-        <table id="county-results" class="table table_striped table-bordered table-hover table-sm">
+        <table id="county-results" class="custom-table table table_striped table-bordered table-hover table-sm">
         {% if county_data %}
             <thead class="thead-light">
                 <th>County ID</th>
@@ -14,7 +14,7 @@
             <TBODY>
                 {% for county, party_counts in county_data.items %}
                     <tr>
-                        <td>{{county}}</td>
+                        <td><a href="{% url 'county_view' county %}">{{party_counts.county_name}}</a></td>
                         <td>{{ party_counts.DEM|default_if_none:0 }}</td>
                         <td>{{ party_counts.REP|default_if_none:0 }}</td>
                         <td>{{ party_counts.UNA|default_if_none:0 }}</td>

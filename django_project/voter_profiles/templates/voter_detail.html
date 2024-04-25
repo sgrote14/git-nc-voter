@@ -9,6 +9,7 @@ function goBack() {
 </script>
 </div>
 <br>
+    <h3>Voter Info</h3>
     <table id="voter-detail" class="table table_striped table-bordered table-hover table-sm">
         <thead class="thead-light">
             <th>NC ID</th>
@@ -36,6 +37,7 @@ function goBack() {
         </tbody>
     </table>
     <br>
+    <h3>Voter History</h3>
     <table id="voter-history" class="table table_striped table-bordered table-hover table-sm">
         <thead class="thead-light">
             <th>Election</th>
@@ -62,7 +64,10 @@ function goBack() {
                 "paging": false}
             );
             $('#voter-history').DataTable({
-                "paging": false}
+                "paging": false,
+                "filter": false,
+                "order": [],
+                "info": false}
             )
         });
     </script>

@@ -61,7 +61,7 @@ fk_dict = {
 params = {
     'sep': '\t',
     'encoding': 'iso-8859-1',
-    'dtype': dtype_dict,
+    'dtype': combined_dtypes,
     'parse_dates': ['registr_dt']
 }  # Used in final function to help read file into DF correctly
 

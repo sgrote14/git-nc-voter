@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div>
+    <button onclick="goBack()">Go Back</button>
+<script>
+function goBack() {
+  window.history.back();
+}
+</script>
+</div>
+<br>
+<h1>{{county_info.county_name}}</h1>
+
+
+{% endblock %}

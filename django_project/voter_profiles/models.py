@@ -267,3 +267,13 @@ class VoterHistory(models.Model):
     precinct_abbreviation = models.CharField(max_length=6)
     voted_county_id = models.CharField(max_length=6)
     voted_district_label = models.CharField(max_length=6)
+
+
+class VoterPartyChange(models.Model):
+    county_id = models.ForeignKey(County, on_delete=models.PROTECT)
+    voter_registration_num = models.CharField(max_length=100)
+
+    active_voter_key = models.ForeignKey(RegisteredVotersActive, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('county_id', 'voter_registration_num')

@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
     <form method="get" action="">
-        {{ search_form }}
+        {% for item in search_form %}
+            {{ item.label }} {{ item }}
+        {% endfor %}
         <button type="submit">Search</button>
     </form>
     <p><b>Total Results: {{ num_results }}</b></p>
-    <table id="search-results" class="table table_striped table-bordered table-hover table-sm">
+    <table id="search-results" class="custom-table table table_striped table-bordered table-hover table-sm">
         <thead class="thead-light">
             <th>NC ID</th>
             <th>First Name</th>
@@ -13,6 +15,7 @@
             <th>Last Name</th>
             <th>Street Address</th>
             <th>City</th>
+            <th>County</th>
             <th>Phone Number</th>
             <th>Registration Date</th>
             <th>Party</th>
@@ -27,6 +30,7 @@
             <td>{{ item.last_name }}</td>
             <td>{{ item.street_address }}</td>
             <td>{{ item.city }}</td>
+            <td>{{ item.county_id.county_name}}</td>
             <td>{{ item.phone_number }}</td>
             <td>{{ item.registration_date }}</td>
             <td>{{ item.party_code_id }}</td>
@@ -38,7 +42,7 @@
     <script>
         $(document).ready(function () {
             $('#search-results').DataTable({
-                "pageLength": 25}
+                "pageLength": 25,}
             );
         });
     </script>
