@@ -32,7 +32,7 @@ df_sample = pd.read_csv(file_path, sep='\t', encoding='iso-8859-1', nrows=1)
 dtype_dict = {'county_id': int}
 dtype = 'str'
 combined_dtypes = get_dtype_dict(df_sample, dtype_dict, dtype)
-chunk_size = 100000
+chunk_size = 1000
 fk_dict = {
     'nc_id': {},
     'county_id': {county.pk: county for county in County.objects.all()}
