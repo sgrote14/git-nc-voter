@@ -35,11 +35,35 @@ function goBack() {
         </tr>
         </tbody>
     </table>
+    <br>
+    <table id="voter-history" class="table table_striped table-bordered table-hover table-sm">
+        <thead class="thead-light">
+            <th>Election</th>
+            <th>Voting Method</th>
+            <th>Voted Party</th>
+            <th>Precinct</th>
+            <th>County</th>
+        </thead>
+        <tbody>
+        {% for election in voter_history %}
+        <tr>
+            <td>{{ election.election_description}}</td>
+            <td>{{ election.voting_method }}</td>
+            <td>{{ election.voted_party }}</td>
+            <td>{{ election.precinct_abbreviation }}</td>
+            <td>{{ election.voted_county_id }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
     <script>
         $(document).ready(function () {
             $('#voter-info').DataTable({
                 "paging": false}
             );
+            $('#voter-history').DataTable({
+                "paging": false}
+            )
         });
     </script>
 {% endblock %}

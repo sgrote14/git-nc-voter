@@ -3,7 +3,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render
-from .models import RegisteredVotersActive, County, RegVoterFile
+from .models import RegisteredVotersActive, County, RegVoterFile, VoterHistory
 from .forms import VoterSearchForm
 
 
@@ -51,9 +51,12 @@ def voter_search(request):
     return render(request, 'search_template.html', context)
 
 
-def voter_detail(request, id):
-    voter_info = RegisteredVotersActive.objects.get(pk=id)
-    context = {'voter_info': voter_info}
+def voter_detail(request, ncid):
+    voter_info = RegisteredVotersActive.objects.get(pk=ncid)
+    voter_history = VoterHistory.objects.filter(reg_voter_id__nc_id=ncid)
+
+    context = {'voter_info': voter_info, 'voter_history': voter_history}
+
     return render(request, 'voter_detail.html', context)
 
 
