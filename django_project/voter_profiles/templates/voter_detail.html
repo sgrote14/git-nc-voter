@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div>
-    <button onclick="goBack()">Go Back</button>
+    <button onclick="goBack()">&larr;</button>
 <script>
 function goBack() {
   window.history.back();
@@ -9,14 +9,16 @@ function goBack() {
 </script>
 </div>
 <br>
-    <h3>Voter Info</h3>
-    <table id="voter-detail" class="table table_striped table-bordered table-hover table-sm">
+<h2>{{ voter_info.first_name}} {{voter_info.last_name}}</h2>
+    <table id="voter-detail" class="custom-table table table_striped table-bordered table-hover table-sm">
         <thead class="thead-light">
             <th>NC ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
             <th>Street Address</th>
             <th>City</th>
+            <th>Zip Code</th>
+            <th>Gender</th>
+            <th>Race</th>
+            <th>Ethnicity</th>
             <th>Phone Number</th>
             <th>Registration Date</th>
             <th>Party</th>
@@ -25,10 +27,12 @@ function goBack() {
         <tbody>
         <tr>
             <td>{{ voter_info.nc_id}}</td>
-            <td>{{ voter_info.first_name }}</td>
-            <td>{{ voter_info.last_name }}</td>
             <td>{{ voter_info.street_address }}</td>
             <td>{{ voter_info.city }}</td>
+            <td>{{ voter_info.zip_code }}</td>
+            <td>{{ voter_info.gender_code.gender_desc }}</td>
+            <td>{{ voter_info.race_code.race_desc }}</td>
+            <td>{{ voter_info.ethnicity_code.ethnicity_desc }}</td>
             <td>{{ voter_info.phone_number }}</td>
             <td>{{ voter_info.registration_date }}</td>
             <td>{{ voter_info.party_code_id }}</td>
@@ -38,7 +42,7 @@ function goBack() {
     </table>
     <br>
     <h3>Voter History</h3>
-    <table id="voter-history" class="table table_striped table-bordered table-hover table-sm">
+    <table id="voter-history" class="custom-table table table_striped table-bordered table-hover table-sm">
         <thead class="thead-light">
             <th>Election</th>
             <th>Voting Method</th>

@@ -75,74 +75,75 @@ class GenderCode(models.Model):
         return f"{self.gender_code}: {self.gender_desc}"
 
 
-class Precinct(models.Model):
-    precinct_abbrv = models.CharField(max_length=6, primary_key=True)
-    precinct_desc = models.CharField(max_length=100)
-
-
-class Municipality(models.Model):
-    municipality_abbrv = models.CharField(max_length=6, primary_key=True)
-    municipality_desc = models.CharField(max_length=100)
-
-
-class Ward(models.Model):
-    ward_abbrv = models.CharField(max_length=6, primary_key=True)
-    ward_desc = models.CharField(max_length=100)
-
-
-class CountyCommissioner(models.Model):
-    county_commiss_abbrv = models.CharField(max_length=6, primary_key=True)
-    county_commiss_desc = models.CharField(max_length=100)
-
-
-class Township(models.Model):
-    township_abbrv = models.CharField(max_length=6, primary_key=True)
-    township_desc = models.CharField(max_length=100)
-
-
-class SchoolDistrict(models.Model):
-    school_dist_abbrv = models.CharField(max_length=6, primary_key=True)
-    school_dist_desc = models.CharField(max_length=100)
-
-
-class FireDistrict(models.Model):
-    fire_dist_abbrv = models.CharField(max_length=6, primary_key=True)
-    fire_dist_desc = models.CharField(max_length=100)
-
-
-class WaterDistrict(models.Model):
-    water_dist_abbrv = models.CharField(max_length=6, primary_key=True)
-    water_dist_desc = models.CharField(max_length=100)
-
-
-class SewerDistrict(models.Model):
-    sewer_dist_abbrv = models.CharField(max_length=6, primary_key=True)
-    sewer_dist_desc = models.CharField(max_length=100)
-
-
-class SanitationDistrict(models.Model):
-    sanit_dist_abbrv = models.CharField(max_length=6, primary_key=True)
-    sanit_dist_desc = models.CharField(max_length=100)
-
-
-class RescueDistrict(models.Model):
-    rescue_dist_abbrv = models.CharField(max_length=6, primary_key=True)
-    rescue_dist_desc = models.CharField(max_length=100)
-
-
-class MunicipalDistrict(models.Model):
-    munic_dist_abbrv = models.CharField(max_length=6, primary_key=True)
-    munic_dist_desc = models.CharField(max_length=100)
-
-
-class ProsecutorialDistrict(models.Model):
-    dist_1_abbrv = models.CharField(max_length=6, primary_key=True)
-    dist_1_desc = models.CharField(max_length=100)
-
-
-class VoterTabulationDistrict(models.Model):
-    vtd_abbrv = models.CharField(max_length=6, primary_key=True)
-    vtd_desc = models.CharField(max_length=100)
+# class Precinct(models.Model):
+#     precinct_abbrv = models.CharField(max_length=6, primary_key=True)
+#     precinct_desc = models.CharField(max_length=100)
+#
+#
+#
+# class Municipality(models.Model):
+#     municipality_abbrv = models.CharField(max_length=6, primary_key=True)
+#     municipality_desc = models.CharField(max_length=100)
+#
+#
+# class Ward(models.Model):
+#     ward_abbrv = models.CharField(max_length=6, primary_key=True)
+#     ward_desc = models.CharField(max_length=100)
+#
+#
+# class CountyCommissioner(models.Model):
+#     county_commiss_abbrv = models.CharField(max_length=6, primary_key=True)
+#     county_commiss_desc = models.CharField(max_length=100)
+#
+#
+# class Township(models.Model):
+#     township_abbrv = models.CharField(max_length=6, primary_key=True)
+#     township_desc = models.CharField(max_length=100)
+#
+#
+# class SchoolDistrict(models.Model):
+#     school_dist_abbrv = models.CharField(max_length=6, primary_key=True)
+#     school_dist_desc = models.CharField(max_length=100)
+#
+#
+# class FireDistrict(models.Model):
+#     fire_dist_abbrv = models.CharField(max_length=6, primary_key=True)
+#     fire_dist_desc = models.CharField(max_length=100)
+#
+#
+# class WaterDistrict(models.Model):
+#     water_dist_abbrv = models.CharField(max_length=6, primary_key=True)
+#     water_dist_desc = models.CharField(max_length=100)
+#
+#
+# class SewerDistrict(models.Model):
+#     sewer_dist_abbrv = models.CharField(max_length=6, primary_key=True)
+#     sewer_dist_desc = models.CharField(max_length=100)
+#
+#
+# class SanitationDistrict(models.Model):
+#     sanit_dist_abbrv = models.CharField(max_length=6, primary_key=True)
+#     sanit_dist_desc = models.CharField(max_length=100)
+#
+#
+# class RescueDistrict(models.Model):
+#     rescue_dist_abbrv = models.CharField(max_length=6, primary_key=True)
+#     rescue_dist_desc = models.CharField(max_length=100)
+#
+#
+# class MunicipalDistrict(models.Model):
+#     munic_dist_abbrv = models.CharField(max_length=6, primary_key=True)
+#     munic_dist_desc = models.CharField(max_length=100)
+#
+#
+# class ProsecutorialDistrict(models.Model):
+#     dist_1_abbrv = models.CharField(max_length=6, primary_key=True)
+#     dist_1_desc = models.CharField(max_length=100)
+#
+#
+# class VoterTabulationDistrict(models.Model):
+#     vtd_abbrv = models.CharField(max_length=6, primary_key=True)
+#     vtd_desc = models.CharField(max_length=100)
 
 
 class RegisteredVotersActive(models.Model):
@@ -178,25 +179,39 @@ class RegisteredVotersActive(models.Model):
     birth_year = models.IntegerField()
     birth_state = models.CharField(max_length=2)
     drivers_license = models.CharField(max_length=2)
-    precinct_abbreviation = models.ForeignKey(Precinct, on_delete=models.PROTECT)
-    municipality_abbreviation = models.ForeignKey(Municipality, on_delete=models.PROTECT)
-    ward_abbreviation = models.ForeignKey(Ward, on_delete=models.PROTECT)
+    precinct_abbreviation = models.CharField(max_length=25)
+    precinct_desc = models.CharField(max_length=100)
+    municipality_abbreviation = models.CharField(max_length=25)
+    municipality_desc = models.CharField(max_length=100)
+    ward_abbreviation = models.CharField(max_length=25)
+    ward_desc = models.CharField(max_length=100)
     congress_dist_abbreviation = models.CharField(max_length=6)
     superior_court_abbreviation = models.CharField(max_length=6)
     judicial_dist_abbreviation = models.CharField(max_length=6)
     nc_senate_abbreviation = models.CharField(max_length=6)
     nc_house_abbreviation = models.CharField(max_length=6)
-    county_comm_abbreviation = models.ForeignKey(CountyCommissioner, on_delete=models.PROTECT)
-    township_abbreviation = models.ForeignKey(Township, on_delete=models.PROTECT)
-    school_dist_abbreviation = models.ForeignKey(SchoolDistrict, on_delete=models.PROTECT)
-    fire_dist_abbreviation = models.ForeignKey(FireDistrict, on_delete=models.PROTECT)
-    water_dist_abbreviation = models.ForeignKey(WaterDistrict, on_delete=models.PROTECT)
-    sewer_dist_abbreviation = models.ForeignKey(SewerDistrict, on_delete=models.PROTECT)
-    sanitation_dist_abbreviation = models.ForeignKey(SanitationDistrict, on_delete=models.PROTECT)
-    rescue_dist_abbreviation = models.ForeignKey(RescueDistrict, on_delete=models.PROTECT)
-    municipal_dist_abbreviation = models.ForeignKey(MunicipalDistrict, on_delete=models.PROTECT)
-    prosecutorial_dist_abbreviation = models.ForeignKey(ProsecutorialDistrict, on_delete=models.PROTECT)
-    voter_tab_dist_abbreviation = models.ForeignKey(VoterTabulationDistrict, on_delete=models.PROTECT)
+    county_comm_abbreviation = models.CharField(max_length=25)
+    county_comm_desc = models.CharField(max_length=100)
+    township_abbreviation = models.CharField(max_length=25)
+    township_desc = models.CharField(max_length=100)
+    school_dist_abbreviation = models.CharField(max_length=25)
+    school_dist_desc = models.CharField(max_length=100)
+    fire_dist_abbreviation = models.CharField(max_length=25)
+    fire_dist_desc = models.CharField(max_length=100)
+    water_dist_abbreviation = models.CharField(max_length=25)
+    water_dist_desc = models.CharField(max_length=100)
+    sewer_dist_abbreviation = models.CharField(max_length=25)
+    sewer_dist_desc = models.CharField(max_length=100)
+    sanitation_dist_abbreviation = models.CharField(max_length=25)
+    sanitation_dist_desc = models.CharField(max_length=100)
+    rescue_dist_abbreviation = models.CharField(max_length=25)
+    rescue_dist_desc = models.CharField(max_length=100)
+    municipal_dist_abbreviation = models.CharField(max_length=25)
+    municipal_dist_desc = models.CharField(max_length=100)
+    prosecutorial_dist_abbreviation = models.CharField(max_length=25)
+    prosecutorial_dist_desc = models.CharField(max_length=100)
+    voter_tab_dist_abbreviation = models.CharField(max_length=25)
+    voter_tab_dist_desc = models.CharField(max_length=100)
 
     def __str__(self):
         return f"{self.first_name} + ' ' + {self.last_name}"
@@ -235,25 +250,39 @@ class RegisteredVotersHistorical(models.Model):
     birth_year = models.IntegerField()
     birth_state = models.CharField(max_length=2)
     drivers_license = models.CharField(max_length=2)
-    precinct_abbreviation = models.ForeignKey(Precinct, on_delete=models.PROTECT)
-    municipality_abbreviation = models.ForeignKey(Municipality, on_delete=models.PROTECT)
-    ward_abbreviation = models.ForeignKey(Ward, on_delete=models.PROTECT)
+    precinct_abbreviation = models.CharField(max_length=25)
+    precinct_desc = models.CharField(max_length=100)
+    municipality_abbreviation = models.CharField(max_length=25)
+    municipality_desc = models.CharField(max_length=100)
+    ward_abbreviation = models.CharField(max_length=25)
+    ward_desc = models.CharField(max_length=100)
     congress_dist_abbreviation = models.CharField(max_length=6)
     superior_court_abbreviation = models.CharField(max_length=6)
     judicial_dist_abbreviation = models.CharField(max_length=6)
     nc_senate_abbreviation = models.CharField(max_length=6)
     nc_house_abbreviation = models.CharField(max_length=6)
-    county_comm_abbreviation = models.ForeignKey(CountyCommissioner, on_delete=models.PROTECT)
-    township_abbreviation = models.ForeignKey(Township, on_delete=models.PROTECT)
-    school_dist_abbreviation = models.ForeignKey(SchoolDistrict, on_delete=models.PROTECT)
-    fire_dist_abbreviation = models.ForeignKey(FireDistrict, on_delete=models.PROTECT)
-    water_dist_abbreviation = models.ForeignKey(WaterDistrict, on_delete=models.PROTECT)
-    sewer_dist_abbreviation = models.ForeignKey(SewerDistrict, on_delete=models.PROTECT)
-    sanitation_dist_abbreviation = models.ForeignKey(SanitationDistrict, on_delete=models.PROTECT)
-    rescue_dist_abbreviation = models.ForeignKey(RescueDistrict, on_delete=models.PROTECT)
-    municipal_dist_abbreviation = models.ForeignKey(MunicipalDistrict, on_delete=models.PROTECT)
-    prosecutorial_dist_abbreviation = models.ForeignKey(ProsecutorialDistrict, on_delete=models.PROTECT)
-    voter_tab_dist_abbreviation = models.ForeignKey(VoterTabulationDistrict, on_delete=models.PROTECT)
+    county_comm_abbreviation = models.CharField(max_length=25)
+    county_comm_desc = models.CharField(max_length=100)
+    township_abbreviation = models.CharField(max_length=25)
+    township_desc = models.CharField(max_length=100)
+    school_dist_abbreviation = models.CharField(max_length=25)
+    school_dist_desc = models.CharField(max_length=100)
+    fire_dist_abbreviation = models.CharField(max_length=25)
+    fire_dist_desc = models.CharField(max_length=100)
+    water_dist_abbreviation = models.CharField(max_length=25)
+    water_dist_desc = models.CharField(max_length=100)
+    sewer_dist_abbreviation = models.CharField(max_length=25)
+    sewer_dist_desc = models.CharField(max_length=100)
+    sanitation_dist_abbreviation = models.CharField(max_length=25)
+    sanitation_dist_desc = models.CharField(max_length=100)
+    rescue_dist_abbreviation = models.CharField(max_length=25)
+    rescue_dist_desc = models.CharField(max_length=100)
+    municipal_dist_abbreviation = models.CharField(max_length=25)
+    municipal_dist_desc = models.CharField(max_length=100)
+    prosecutorial_dist_abbreviation = models.CharField(max_length=25)
+    prosecutorial_dist_desc = models.CharField(max_length=100)
+    voter_tab_dist_abbreviation = models.CharField(max_length=25)
+    voter_tab_dist_desc = models.CharField(max_length=100)
 
 
 class VoterHistory(models.Model):
@@ -269,11 +298,11 @@ class VoterHistory(models.Model):
     voted_district_label = models.CharField(max_length=6)
 
 
-class VoterPartyChange(models.Model):
-    county_id = models.ForeignKey(County, on_delete=models.PROTECT)
-    voter_registration_num = models.CharField(max_length=100)
-
-    active_voter_key = models.ForeignKey(RegisteredVotersActive, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('county_id', 'voter_registration_num')
+# class VoterPartyChange(models.Model):
+#     county_id = models.ForeignKey(County, on_delete=models.PROTECT)
+#     voter_registration_num = models.CharField(max_length=100)
+#
+#     active_voter_key = models.ForeignKey(RegisteredVotersActive, on_delete=models.CASCADE)
+#
+#     class Meta:
+#         unique_together = ('county_id', 'voter_registration_num')

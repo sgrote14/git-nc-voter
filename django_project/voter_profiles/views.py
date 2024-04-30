@@ -1,7 +1,9 @@
+import json
+
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Count
-from django.http import HttpResponse
+from django.db.models import Count, Q
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from .models import RegisteredVotersActive, County, RegVoterFile, VoterHistory
 from .forms import VoterSearchForm
@@ -39,43 +41,86 @@ def county_view(request, county_id):
     return render(request, 'county_detail.html', context)
 
 
+def search_filter(form):
+    print(form.cleaned_data)
+    filters = {}
+
+    county_id = form.cleaned_data['county_id']
+    precinct_name = form.cleaned_data['precinct_desc']
+    party_name = form.cleaned_data['party_code']
+    search_query = form.cleaned_data['last_name']
+
+    fields = list(form.cleaned_data.keys())
+    print(fields)
+
+    for key, value in form.cleaned_data.items():
+        if value:
+            if type(value) == str:
+                filters[f'{key}__icontains'] = value
+            else:
+                filters[f'{key}'] = value
+
+    filter_conditions = Q()
+    for key, value in filters.items():
+        filter_conditions &= Q(**{key: value})
+
+    print('filter_conditions:', filter_conditions)
+    return filter_conditions
+
+
 def voter_search(request):
     queryset = RegisteredVotersActive.objects.none()
     search_form = VoterSearchForm(request.GET)
-    print("Form instance:", search_form)
 
-    search_field_name = 'last_name'
+    if 'county_id' in request.GET:
+        county_id = request.GET['county_id']
+        precinct_choices = get_precincts_choice(request)
+        search_form.fields['precinct_desc'].choices = precinct_choices
+
     if search_form.is_valid():
-        search_query = search_form.cleaned_data.get('search_query')
-        county_name = search_form.cleaned_data.get('county_name')
-        print(search_query, county_name)
-        if search_query and county_name:
-            queryset = RegisteredVotersActive.objects.filter(**{f'{search_field_name}__icontains': search_query})
-            queryset = queryset.filter(county_id=county_name.county_id)
+        print('search_form:', search_form.cleaned_data)
+        #     search_query = search_form.cleaned_data.get('search_query')
+        #     county_name = search_form.cleaned_data.get('county_name')
+        #     print(search_query, county_name)
+        #     if search_query and county_name:
+        #         queryset = RegisteredVotersActive.objects.filter(**{f'{search_field_name}__icontains': search_query})
+        #         queryset = queryset.filter(county_id=county_name.county_id)
+        #
+        #     elif county_name:
+        #         queryset = RegisteredVotersActive.objects.filter(county_id=county_name.county_id)
+        #
+        #     elif search_query:
+        #         queryset = RegisteredVotersActive.objects.filter(**{f'{search_field_name}__icontains': search_query})
+        #
+        #     else:
+        #         queryset = RegisteredVotersActive.objects.none()
 
-        elif county_name:
-            queryset = RegisteredVotersActive.objects.filter(county_id=county_name.county_id)
-
-        elif search_query:
-            queryset = RegisteredVotersActive.objects.filter(**{f'{search_field_name}__icontains': search_query})
-
-        else:
-            queryset = RegisteredVotersActive.objects.none()
-
-
-
+        filter_conditions = search_filter(search_form)
+        queryset = RegisteredVotersActive.objects.filter(filter_conditions, status_code='A')
     else:
         print("Form data:", request.GET)
         print("Form errors:", search_form.errors)
 
-    print(len(queryset))
-    queryset = queryset.filter(status_code='A')
-    print(len(queryset))
     num_results = len(queryset)
-
     context = {'search_form': search_form, 'queryset': queryset, 'num_results': num_results}
 
     return render(request, 'search_template.html', context)
+
+
+def get_precincts(request):
+    county_id = request.GET.get('county_id')
+    print(county_id)
+    precincts = RegisteredVotersActive.objects.filter(county_id=county_id).values_list('precinct_desc',
+                                                                                       flat=True).distinct().order_by(
+        'precinct_desc')
+    return JsonResponse(list(precincts), safe=False)
+
+
+def get_precincts_choice(request):
+    county_id = request.GET.get('county_id')
+    precincts = RegisteredVotersActive.objects.filter(county_id=county_id).values_list('precinct_desc', flat=True).distinct().order_by('precinct_desc')
+    precinct_choices = [(precinct, precinct) for precinct in precincts]
+    return precinct_choices
 
 
 def voter_detail(request, ncid):

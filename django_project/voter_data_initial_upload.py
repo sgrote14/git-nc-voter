@@ -27,12 +27,12 @@ def get_dtype_dict(dataframe, specified_dtypes, dtype):
 
 
 # Creates required variables needed for every function.
-file_path = 'ncvoter_Statewide.txt'
+file_path = '../../ncvoter_Statewide.txt'
 df_sample = pd.read_csv(file_path, sep='\t', encoding='iso-8859-1', nrows=1)
 dtype_dict = {'county_id': int, 'birth_year': int}
 dtype = 'str'
 combined_dtypes = get_dtype_dict(df_sample, dtype_dict, dtype)
-chunk_size = 100000
+chunk_size = 1000
 file_inst = RegVoterFile.objects.get(pk=1)
 start_date = RegVoterFile.objects.get(pk=1).file_date
 fk_dict = {
@@ -43,20 +43,6 @@ fk_dict = {
     'ethnic_code': {ethnic.pk: ethnic for ethnic in EthnicityCode.objects.all()},
     'party_code': {party.pk: party for party in PartyCode.objects.all()},
     'gender_code': {gender.pk: gender for gender in GenderCode.objects.all()},
-    'precinct': {precinct.pk: precinct for precinct in Precinct.objects.all()},
-    'munic': {munic.pk: munic for munic in Municipality.objects.all()},
-    'ward': {ward.pk: ward for ward in Ward.objects.all()},
-    'county_commiss': {commiss.pk: commiss for commiss in CountyCommissioner.objects.all()},
-    'township': {township.pk: township for township in Township.objects.all()},
-    'school_dist': {school.pk: school for school in SchoolDistrict.objects.all()},
-    'fire_dist': {fire.pk: fire for fire in FireDistrict.objects.all()},
-    'water_dist': {water.pk: water for water in WaterDistrict.objects.all()},
-    'sewer_dist': {sewer.pk: sewer for sewer in SewerDistrict.objects.all()},
-    'sanit_dist': {sanit.pk: sanit for sanit in SanitationDistrict.objects.all()},
-    'rescue_dist': {rescue.pk: rescue for rescue in RescueDistrict.objects.all()},
-    'munic_dist': {munic_dist.pk: munic_dist for munic_dist in MunicipalDistrict.objects.all()},
-    'dist_1': {prosecutorial.pk: prosecutorial for prosecutorial in ProsecutorialDistrict.objects.all()},
-    'vtd': {vtd.pk: vtd for vtd in VoterTabulationDistrict.objects.all()}
 }  # Create dictionary of objects for all foreign keys in registered model (to optimize DB queries)
 params = {
     'sep': '\t',
@@ -68,13 +54,13 @@ params = {
 
 def get_inst(fk_dictionary, key1, key2, model_class, **kwargs):
     try:
-        county_id_inst = fk_dictionary[key1][key2]
+        instance = fk_dictionary[key1][key2]
     except:
-        county_id_inst = model_class(pk=key2, **kwargs)
-        county_id_inst.save()
-        fk_dictionary[key1][key2] = county_id_inst
+        instance = model_class(pk=key2, **kwargs)
+        instance.save()
+        fk_dictionary[key1][key2] = instance
 
-    return county_id_inst  # gets in
+    return instance
 
 
 def create_voter_instance(file, chunks, **kwargs):
@@ -99,32 +85,6 @@ def create_voter_instance(file, chunks, **kwargs):
             ethnic_code_inst = get_inst(fk_dict, 'ethnic_code', row['ethnic_code'], EthnicityCode)
             party_code_inst = get_inst(fk_dict, 'party_code', row['party_cd'], PartyCode)
             gender_code_inst = get_inst(fk_dict, 'gender_code', row['gender_code'], GenderCode)
-            precinct_inst = get_inst(fk_dict, 'precinct', row['precinct_abbrv'], Precinct,
-                                     precinct_desc=row['precinct_desc'])
-            munic_inst = get_inst(fk_dict, 'munic', row['municipality_abbrv'], Municipality,
-                                  municipality_desc=row['municipality_desc'])
-            ward_inst = get_inst(fk_dict, 'ward', row['ward_abbrv'], Ward, ward_desc=row['ward_desc'])
-            county_commiss_inst = get_inst(fk_dict, 'county_commiss', row['county_commiss_abbrv'], CountyCommissioner,
-                                           county_commiss_desc=row['county_commiss_desc'])
-            township_inst = get_inst(fk_dict, 'township', row['township_abbrv'], Township,
-                                     township_desc=row['township_desc'])
-            school_dist_inst = get_inst(fk_dict, 'school_dist', row['school_dist_abbrv'], SchoolDistrict,
-                                        school_dist_desc=row['school_dist_desc'])
-            fire_dist_inst = get_inst(fk_dict, 'fire_dist', row['fire_dist_abbrv'], FireDistrict,
-                                      fire_dist_desc=row['fire_dist_desc'])
-            water_dist_inst = get_inst(fk_dict, 'water_dist', row['water_dist_abbrv'], WaterDistrict,
-                                       water_dist_desc=row['water_dist_desc'])
-            sewer_dist_inst = get_inst(fk_dict, 'sewer_dist', row['sewer_dist_abbrv'], SewerDistrict,
-                                       sewer_dist_desc=row['sewer_dist_desc'])
-            sanit_dist_inst = get_inst(fk_dict, 'sanit_dist', row['sanit_dist_abbrv'], SanitationDistrict,
-                                       sanit_dist_desc=row['sanit_dist_desc'])
-            rescue_dist_inst = get_inst(fk_dict, 'rescue_dist', row['rescue_dist_abbrv'], RescueDistrict,
-                                        rescue_dist_desc=row['rescue_dist_desc'])
-            munic_dist_inst = get_inst(fk_dict, 'munic_dist', row['munic_dist_abbrv'], MunicipalDistrict,
-                                       munic_dist_desc=row['munic_dist_desc'])
-            dist_1_inst = get_inst(fk_dict, 'dist_1', row['dist_1_abbrv'], ProsecutorialDistrict,
-                                   dist_1_desc=row['dist_1_desc'])
-            vtd_inst = get_inst(fk_dict, 'vtd', row['vtd_abbrv'], VoterTabulationDistrict, vtd_desc=row['vtd_desc'])
             model_instance = RegisteredVotersActive(
                 # all non-foreign keys
                 nc_id=row['ncid'],
@@ -155,6 +115,34 @@ def create_voter_instance(file, chunks, **kwargs):
                 judicial_dist_abbreviation=row['judic_dist_abbrv'],
                 nc_senate_abbreviation=row['nc_senate_abbrv'],
                 nc_house_abbreviation=row['nc_house_abbrv'],
+                precinct_abbreviation=row['precinct_abbrv'],
+                precinct_desc=row['precinct_desc'],
+                municipality_abbreviation=row['municipality_abbrv'],
+                municipality_desc=row['municipality_desc'],
+                ward_abbreviation=row['ward_abbrv'],
+                ward_desc=row['ward_desc'],
+                county_comm_abbreviation=row['county_commiss_abbrv'],
+                county_comm_desc=row['county_commiss_desc'],
+                township_abbreviation=row['township_abbrv'],
+                township_desc=row['township_desc'],
+                school_dist_abbreviation=row['school_dist_abbrv'],
+                school_dist_desc=row['school_dist_desc'],
+                fire_dist_abbreviation=row['fire_dist_abbrv'],
+                fire_dist_desc = row['fire_dist_desc'],
+                water_dist_abbreviation=row['water_dist_abbrv'],
+                water_dist_desc = row['water_dist_desc'],
+                sewer_dist_abbreviation=row['sewer_dist_abbrv'],
+                sewer_dist_desc = row['sewer_dist_desc'],
+                sanitation_dist_abbreviation=row['sanit_dist_abbrv'],
+                sanitation_dist_desc = row['sanit_dist_desc'],
+                rescue_dist_abbreviation=row['rescue_dist_abbrv'],
+                rescue_dist_desc = row['rescue_dist_desc'],
+                municipal_dist_abbreviation=row['munic_dist_abbrv'],
+                municipal_dist_desc = row['munic_dist_desc'],
+                prosecutorial_dist_abbreviation=row['dist_1_abbrv'],
+                prosecutorial_dist_desc = row['dist_1_desc'],
+                voter_tab_dist_abbreviation=row['vtd_abbrv'],
+                voter_tab_dist_desc = row['vtd_desc'],
                 # all foreign keys
                 county_id=county_id_inst,
                 status_code=status_code_inst,
@@ -163,20 +151,6 @@ def create_voter_instance(file, chunks, **kwargs):
                 ethnicity_code=ethnic_code_inst,
                 party_code=party_code_inst,
                 gender_code=gender_code_inst,
-                precinct_abbreviation=precinct_inst,
-                municipality_abbreviation=munic_inst,
-                ward_abbreviation=ward_inst,
-                county_comm_abbreviation=county_commiss_inst,
-                township_abbreviation=township_inst,
-                school_dist_abbreviation=school_dist_inst,
-                fire_dist_abbreviation=fire_dist_inst,
-                water_dist_abbreviation=water_dist_inst,
-                sewer_dist_abbreviation=sewer_dist_inst,
-                sanitation_dist_abbreviation=sanit_dist_inst,
-                rescue_dist_abbreviation=rescue_dist_inst,
-                municipal_dist_abbreviation=munic_dist_inst,
-                prosecutorial_dist_abbreviation=dist_1_inst,
-                voter_tab_dist_abbreviation=vtd_inst,
                 file_id=file_inst
                 # using the below as a placeholder for now...will need to capture it from the voter_file_check script
             )

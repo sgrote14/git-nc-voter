@@ -1,12 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form method="get" action="">
+    <form class= "search-form" method="get" action="">
         {% for item in search_form %}
             {{ item.label }} {{ item }}
         {% endfor %}
         <button type="submit">Search</button>
+        {% if search_form.errors %}
+        <div style="margin: 5px" class ="alert alert-danger">
+            {% for error in search_form.non_field_errors %}
+                <p><b>{{error}}</b></p>
+            {% endfor %}
+        </div>
+        {% endif %}
     </form>
-    <p><b>Total Results: {{ num_results }}</b></p>
+    <hr>
+    <p><b>Total Active Voters: {{ num_results }}</b></p>
     <table id="search-results" class="custom-table table table_striped table-bordered table-hover table-sm">
         <thead class="thead-light">
             <th>NC ID</th>
@@ -16,6 +24,7 @@
             <th>Street Address</th>
             <th>City</th>
             <th>County</th>
+            <th>Zip Code</th>
             <th>Phone Number</th>
             <th>Registration Date</th>
             <th>Party</th>
@@ -31,6 +40,7 @@
             <td>{{ item.street_address }}</td>
             <td>{{ item.city }}</td>
             <td>{{ item.county_id.county_name}}</td>
+            <td>{{ item.zip_code}}</td>
             <td>{{ item.phone_number }}</td>
             <td>{{ item.registration_date }}</td>
             <td>{{ item.party_code_id }}</td>
@@ -42,8 +52,57 @@
     <script>
         $(document).ready(function () {
             $('#search-results').DataTable({
-                "pageLength": 25,}
-            );
+                "pageLength": 25,
+                dom: 'Bfrtip',
+                "buttons": [
+                    {
+                        extend: 'excel',
+                        text: 'Export Data'
+                    }
+                ]
+            });
+
+            // Move the event listener for change event inside $(document).ready()
+            $('#id_county_id').change(function() {
+                var countyId = $(this).val();
+                if (countyId) {
+                    $('#id_precinct_desc').prop('disabled', false);
+                    $('#id_precinct_desc').empty()
+
+                    // Fetch precinct choices via AJAX
+                $.ajax({
+                    url: '/get_precincts/',
+                    type: 'GET',
+                    data: {county_id: countyId},
+                    success: function(data) {
+                        var precinctSelect = $('#id_precinct_desc');
+                        var selectedValue = precinctSelect.val(); // Get the previously selected value
+
+                        // Populate precinct choices
+                        precinctSelect.append($('<option>', {
+                            value: '',
+                            text: 'All Precincts'
+                        }))
+                        $.each(data, function(key, value) {
+                            var option = $('<option>', {
+                                value: value,
+                                text: value
+                            });
+
+                            precinctSelect.append(option);
+                        });
+
+                        precinctSelect.val(selectedValue);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching precincts:', error);
+                    }
+                    // Error handling code
+                });
+                } else {
+                    $('#id_precinct_desc').prop('disabled', true).val('').empty();
+                }
+            });
         });
     </script>
 {% endblock %}

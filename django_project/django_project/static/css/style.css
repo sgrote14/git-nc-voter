@@ -5,3 +5,46 @@
 .custom-table th {
     background-color: lightgray;
 }
+
+.search-form {
+    margin-bottom: 10px;
+}
+
+.search-form-field {
+    width: 200px;
+    height: 30px;
+    font-size: 14px;
+    padding: 2px;
+    border: 1px solid black;
+    line-height: normal;
+    margin-right: 10px;
+}
+
+.search-form-field[disabled] {
+    color: #999; /* Light gray color for text */
+    background-color: #f5f5f5; /* Light gray background */
+    border: 1px solid #ccc; /* Light gray border */
+    cursor: not-allowed; /* Use 'not-allowed' cursor for disabled state */
+}
+
+.dt-buttons {
+    display: inline;
+    font-size: 12px;
+}
+
+.dt-search {
+    display: inline;
+    float: right;
+    margin-bottom: 1px;
+}
+
+.dt-input {
+    font-size: 12px;
+    padding: 3px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 20px 0;
+}
