@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'voter_profiles',
-    'django_extensions'
+    'django_extensions',
+    'django_select2'
 ]
 
 MIDDLEWARE = [

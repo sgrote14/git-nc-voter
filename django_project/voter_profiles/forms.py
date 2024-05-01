@@ -1,6 +1,7 @@
 from django import forms
+from django.db.models import Q
 
-from .models import County, PartyCode
+from .models import County, PartyCode, VoterHistory
 
 
 def label_from_instance(obj):
@@ -10,8 +11,8 @@ def label_from_instance(obj):
 class VoterSearchForm(forms.Form):
     county_id = forms.ModelChoiceField(
         label='',
+        empty_label='Select a County',
         queryset=County.objects.all().order_by('county_name'),
-        empty_label='All Counties',
         required=False,
         widget=forms.Select(attrs={'class': 'search-form-field'})
     )
@@ -19,7 +20,7 @@ class VoterSearchForm(forms.Form):
         label='',
         required=False,
         choices=[],
-        widget=forms.Select(attrs={'class': 'search-form-field', 'disabled': 'disabled',
+        widget=forms.Select(attrs={'class': 'search-form-field',
                                    'placeholder': 'Select Precinct'})
     )
 
@@ -30,6 +31,15 @@ class VoterSearchForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={'placeholder': 'Party', 'class': 'search-form-field'})
     )
+
+    # election_votes = forms.ModelChoiceField(
+    #     label='',
+    #     empty_label='All Elections',
+    #     required=False,
+    #     queryset=VoterHistory.objects.filter(Q(election_description__regex=r"\d{2}/\d{2}/\d{4}\s+(GENERAL|PRIMARY)$")).
+    #     values_list('election_description', flat=True).distinct(),
+    #     widget=forms.Select(attrs={'class': 'search-form-field'})
+    # )
 
     last_name = forms.CharField(
         label='',
@@ -47,9 +57,10 @@ class VoterSearchForm(forms.Form):
         precinct_desc = cleaned_data.get('precinct_desc')
         party_code = cleaned_data.get('party_code')
         last_name = cleaned_data.get('last_name')
+        election_votes = cleaned_data.get('election_votes')
 
         # Check if at least one field is provided
-        if not (county_id or precinct_desc or party_code or last_name):
+        if not (county_id or precinct_desc or party_code or last_name or election_votes):
             raise forms.ValidationError("At least one field is required.")
 
         return cleaned_data

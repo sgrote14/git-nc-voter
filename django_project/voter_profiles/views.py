@@ -71,30 +71,16 @@ def search_filter(form):
 def voter_search(request):
     queryset = RegisteredVotersActive.objects.none()
     search_form = VoterSearchForm(request.GET)
+    print('request.GET:', request.GET)
 
-    if 'county_id' in request.GET:
-        county_id = request.GET['county_id']
-        precinct_choices = get_precincts_choice(request)
-        search_form.fields['precinct_desc'].choices = precinct_choices
+    if request.GET:
+        if request.GET['county_id']:
+            county_id = request.GET['county_id']
+            precinct_choices = get_precincts_choice(request)
+            search_form.fields['precinct_desc'].choices = precinct_choices
 
     if search_form.is_valid():
         print('search_form:', search_form.cleaned_data)
-        #     search_query = search_form.cleaned_data.get('search_query')
-        #     county_name = search_form.cleaned_data.get('county_name')
-        #     print(search_query, county_name)
-        #     if search_query and county_name:
-        #         queryset = RegisteredVotersActive.objects.filter(**{f'{search_field_name}__icontains': search_query})
-        #         queryset = queryset.filter(county_id=county_name.county_id)
-        #
-        #     elif county_name:
-        #         queryset = RegisteredVotersActive.objects.filter(county_id=county_name.county_id)
-        #
-        #     elif search_query:
-        #         queryset = RegisteredVotersActive.objects.filter(**{f'{search_field_name}__icontains': search_query})
-        #
-        #     else:
-        #         queryset = RegisteredVotersActive.objects.none()
-
         filter_conditions = search_filter(search_form)
         queryset = RegisteredVotersActive.objects.filter(filter_conditions, status_code='A')
     else:

@@ -29,6 +29,7 @@
             <th>Registration Date</th>
             <th>Party</th>
             <th>Birth Year</th>
+            <th>Race</th>
         </thead>
         <tbody>
         {% for item in queryset %}
@@ -45,6 +46,7 @@
             <td>{{ item.registration_date }}</td>
             <td>{{ item.party_code_id }}</td>
             <td>{{ item.birth_year }}</td>
+            <td>{{ item.race_code }}</td>
         </tr>
         {% endfor %}
         </tbody>
