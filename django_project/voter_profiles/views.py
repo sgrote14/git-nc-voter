@@ -117,3 +117,11 @@ def voter_detail(request, ncid):
         print(voter.election_date)
 
     return render(request, 'voter_detail.html', context)
+
+
+def analytics(request):
+    return render(request, 'analytics.html')
+
+
+def api(request):
+    return render(request, 'api.html')

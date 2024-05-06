@@ -60,3 +60,11 @@ table.dataTable {
 .navbar {
     border-bottom: 1px solid black; /* Change color and thickness as needed */
 }
+
+.nav-link {
+    color: black;
+}
+
+.nav-item.active {
+    font-weight: bold;
+}

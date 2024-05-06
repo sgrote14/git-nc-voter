@@ -3,10 +3,10 @@
   <img src = "{% static 'NCDP_logo.svg' %}" style="max-width: 10%; height: auto" />
   <div class="collapse navbar-collapse justify-content-center navbar-bottom-divider">
     <ul class="nav nav-fill">
-      <li class="nav-item"><a class='nav-link text-dark' href="{% url 'home' %}">Home</a></li>
-      <li class="nav-item"><a class='nav-link text-dark' href="{% url 'voters' %}">Voter Search</a></li>
-      <li class="nav-item"><a class='nav-link text-dark' href="#">Analytics (coming soon!)</a></li>
-      <li class="nav-item"><a class='nav-link text-dark' href="#">API (coming soon!)</a></li>
+      <li class="nav-item"><a class='nav-link' href="{% url 'home' %}">Home</a></li>
+      <li class="nav-item"><a class='nav-link' href="{% url 'voters' %}">Voter Search</a></li>
+      <li class="nav-item"><a class='nav-link' href="{% url 'analytics' %}">Analytics (coming soon!)</a></li>
+      <li class="nav-item"><a class='nav-link' href="{% url 'api' %}">API (coming soon!)</a></li>
     </ul>
   </div>
 </nav>

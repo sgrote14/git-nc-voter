@@ -27,3 +27,19 @@
 
     </body>
 </html>
+<script>
+    var currentUrl = window.location.pathname;
+    console.log(currentUrl)
+    // Get all navigation links
+    var navLinks = document.querySelectorAll('nav ul li a');
+    console.log(navLinks)
+    // Loop through each link
+    navLinks.forEach(function(link) {
+        // Check if the link's href matches the current URL
+        console.log(link)
+        if (link.getAttribute('href') === currentUrl) {
+            // Add the 'active' class to the parent <li> element
+            link.parentNode.classList.add('active');
+        }
+    });
+</script>
